@@ -1,0 +1,41 @@
+name: Deploy to dev on branch create
+
+# Trigger the workflow on the `create` event, which fires for new branches or tags.
+on:
+  create:
+
+jobs:
+  deploy-feature-environment:
+    # Only run this job if the created reference is a branch.
+    if: github.event.ref_type == 'branch'
+
+    # The runner environment where the job will execute.
+    runs-on: ubuntu-latest
+
+    # Specify the environment to use for this job.
+    # This automatically applies any protection rules and makes environment secrets available.
+    environment: dev-feature-branches
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get branch name
+        id: get-branch
+        run: echo "branch_name=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+
+      - name: Log the environment and branch
+        run: |
+          echo "Deploying to environment: dev-feature-branches"
+          echo "Branch created: ${{ steps.get-branch.outputs.branch_name }}"
+
+      # Add your specific deployment steps here.
+      # This example shows a placeholder. You will need to replace this with your actual deployment logic.
+      - name: Deploy to lower environment
+        run: |
+          # Replace this with your deployment command, e.g., via a CLI tool or script.
+          # The deployment should use the secrets configured in the `dev-feature-branches` environment.
+          echo "Executing deployment for branch ${{ steps.get-branch.outputs.branch_name }}..."
+          # Example: A command that uses an environment secret.
+          # ./deploy-script.sh --api-key ${{ secrets.API_KEY }} --environment-url ${{ vars.DEPLOYMENT_URL }}
+          echo "Deployment successful."
